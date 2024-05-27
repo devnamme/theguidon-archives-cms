@@ -1,6 +1,6 @@
 <?php
 
-function intcms_interactive_show_meta_box() {
+function archivescms_issue_show_meta_box() {
   global $post;
 
   $description = get_post_meta($post->ID, 'description', true);

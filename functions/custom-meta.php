@@ -3,23 +3,23 @@
 /**
  * Add meta boxes
  */
-function intcms_add_links_meta_box() {
+function archivescms_add_links_meta_box() {
   add_meta_box(
-    'intcms_interactive_meta_box',
-    'Interactive Article Information',
-    'intcms_interactive_show_meta_box',
+    'archivescms_issue_meta_box',
+    'Issue Information',
+    'archivescms_issue_show_meta_box',
     array('post'),
     'advanced',
     'high',
   );
 }
-add_action('add_meta_boxes', 'intcms_add_links_meta_box');
+add_action('add_meta_boxes', 'archivescms_add_links_meta_box');
 
 
 /**
  * Helper for saving post custom meta
  */
-function intcms_save_post_custom_meta($post_id, $meta_keys) {
+function archivescms_save_post_custom_meta($post_id, $meta_keys) {
   foreach ($meta_keys as $key) {
     $old = get_post_meta($post_id, $key, true);
 
@@ -39,7 +39,7 @@ function intcms_save_post_custom_meta($post_id, $meta_keys) {
 /**
  * Helper for saving files
  */
-function intcms_save_post_custom_meta_files($post_id, $post_slug, $file_keys) {
+function archivescms_save_post_custom_meta_files($post_id, $post_slug, $file_keys) {
   foreach($file_keys as $key) {
     if (isset($_FILES[$key[0]])) {
       if ($_FILES[$key[0]]['error'] == 4 || ($_FILES[$key[0]]['size'] == 0 && $_FILES[$key[0]]['error'] == 0)) {
@@ -81,24 +81,24 @@ function intcms_save_post_custom_meta_files($post_id, $post_slug, $file_keys) {
 /**
  * Save custom meta
  */
-function intcms_interactive_save_custom_meta($post_id, $post, $update) {
+function archivescms_issue_save_custom_meta($post_id, $post, $update) {
   if (!isset($_POST['custom_nonce']))
     return;
 
-  intcms_save_post_custom_meta($post_id, array(
-    'description',
-    'preview_url',
-    'path',
-    'bylines',
-    'shortlink',
+  archivescms_save_post_custom_meta($post_id, array(
+    // 'description',
+    // 'preview_url',
+    // 'path',
+    // 'bylines',
+    // 'shortlink',
   ));
 
-  intcms_save_post_custom_meta_files($post_id, $post->post_name, array(
-    array('preview_image', 'img'),
-    array('preview_video', 'vid'),
+  archivescms_save_post_custom_meta_files($post_id, $post->post_name, array(
+    // array('preview_image', 'img'),
+    // array('preview_video', 'vid'),
   ));
 
 }
-add_action('save_post_post', 'intcms_interactive_save_custom_meta', 10, 3);
+add_action('save_post_post', 'archivescms_issue_save_custom_meta', 10, 3);
 
 ?>

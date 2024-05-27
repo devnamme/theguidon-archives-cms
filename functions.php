@@ -11,7 +11,7 @@ include 'functions/custom-meta.php';
 add_theme_support('admin-bar', array( 'callback' => '__return_false'));
 
 
-function intcms_get_articles() {
+function archivescms_get_articles() {
   $articles = array();
 
   $query = new WP_Query(array(
@@ -63,10 +63,10 @@ function intcms_get_articles() {
 
 
 add_action('rest_api_init', function() {
-  register_rest_route('wp/v2', 'interactives', array(
-      'methods' => 'GET',
-      'callback' => 'intcms_get_articles'
-  ));
+  // register_rest_route('wp/v2', 'issues', array(
+  //     'methods' => 'GET',
+  //     'callback' => 'archivescms_get_articles'
+  // ));
 });
 
 
