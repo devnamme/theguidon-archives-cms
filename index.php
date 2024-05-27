@@ -27,10 +27,12 @@ body {
 
 body img {
   width: 100%;
-  max-width: 1000px;
+  max-width: 700px;
   height: auto;
 }
   </style>
+
+  <link rel="icon" href="<?php echo get_template_directory_uri() ?>/assets/logos/logo-white.png" />
 
   <?php wp_head(); ?>
 </head>
