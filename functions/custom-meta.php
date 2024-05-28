@@ -49,7 +49,7 @@ function archivescms_save_post_custom_meta_files($post_id, $post_slug, $file_key
       $filename = $_FILES[$key[0]]['name'];
       $upload_dir = wp_upload_dir();
 
-      $newfilename = 'preview-' . $key[1] . '-' . $post_slug . '.' . pathinfo($filename)['extension'];
+      $newfilename = $key[1] . '-' . $post_slug . '.' . pathinfo($filename)['extension'];
   
       if (wp_mkdir_p($upload_dir['path'])) {
         $file = $upload_dir['path'] . '/' . $newfilename;
@@ -86,16 +86,16 @@ function archivescms_issue_save_custom_meta($post_id, $post, $update) {
     return;
 
   archivescms_save_post_custom_meta($post_id, array(
-    // 'description',
-    // 'preview_url',
-    // 'path',
-    // 'bylines',
-    // 'shortlink',
+    'fixed_slug',
+    'description',
+    'is_legacy',
+    'num_pages',
+    'shortlink',
+    'content',
   ));
 
-  archivescms_save_post_custom_meta_files($post_id, $post->post_name, array(
-    // array('preview_image', 'img'),
-    // array('preview_video', 'vid'),
+  archivescms_save_post_custom_meta_files($post_id, $_POST['fixed_slug'], array(
+    array('full_issue', 'issue'),
   ));
 
 }

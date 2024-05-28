@@ -15,7 +15,7 @@ function archivescms_get_articles() {
   $articles = array();
 
   $query = new WP_Query(array(
-    'numberposts' => -1,
+    'posts_per_page' => 20,
   ));
 
   while ($query->have_posts()) {
@@ -43,15 +43,15 @@ function archivescms_get_articles() {
     }
 
     $articles[] = array(
-      'slug' => $query->post->post_name,
+      'fixed_slug' => get_post_meta($query->post->ID, 'fixed_slug', true),
       'title' => get_the_title(),
       'date_published' => get_the_date('c'),
       'description' => get_post_meta($query->post->ID, 'description', true),
-      'path' => get_post_meta($query->post->ID, 'path', true),
-      'cover' => wp_get_attachment_url(get_post_thumbnail_id($query->post->ID)),
-      'preview_image' => get_post_meta($query->post->ID, 'preview_image', true),
-      'preview_video' => get_post_meta($query->post->ID, 'preview_video', true),
-      'bylines' => $bylines,
+      'is_legacy' => get_post_meta($query->post->ID, 'is_legacy', true),
+      'num_pages' => get_post_meta($query->post->ID, 'num_pages', true),
+      'shortlink' => get_post_meta($query->post->ID, 'shortlink', true),
+      'full_issue' => get_post_meta($query->post->ID, 'full_issue', true),
+      'content' => get_post_meta($query->post->ID, 'content', true),
       'categories' => $categories,
     );
   }
@@ -63,10 +63,10 @@ function archivescms_get_articles() {
 
 
 add_action('rest_api_init', function() {
-  // register_rest_route('wp/v2', 'issues', array(
-  //     'methods' => 'GET',
-  //     'callback' => 'archivescms_get_articles'
-  // ));
+  register_rest_route('wp/v2', 'issues', array(
+      'methods' => 'GET',
+      'callback' => 'archivescms_get_articles'
+  ));
 });
 
 

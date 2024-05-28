@@ -10,7 +10,6 @@ function archivescms_issue_show_meta_box() {
     'is_legacy',
     'num_pages',
     'shortlink',
-    'front_page',
     'full_issue',
     'content',
   );
@@ -64,43 +63,21 @@ function archivescms_issue_show_meta_box() {
   value="<?php echo $custom_meta['shortlink'] ?>"
 /><br /><br />
 
-<label for="front_page">Upload Front Page or Cover</label><br />
-<input
-  class="widefat"
-  type="file"
-  accept="image/*"
-  name="front_page"
-  id="front_page"
-/>
-
-<?php
-if (!empty($custom_meta['front_page'])) {
-?>
-  <img
-    style="display: block; width: 100%; max-width: 400px; height: auto;"
-    src="<?php echo $custom_meta['front_page'] ?>"
-  />
-<?php
-}
-?>
-
-<br /><br />
-
 <label for="full_issue">Upload Full Issue (PDF)</label><br />
 <input
   class="widefat"
   type="file"
-  accept="image/*"
+  accept="application/pdf"
   name="full_issue"
   id="full_issue"
 />
 
 <?php
-if (!empty($custom_meta['full_issue'])) {
+if (has_post_thumbnail($post) && !empty($custom_meta['full_issue'])) {
 ?>
   <img
-    style="display: block; width: 100%; max-width: 400px; height: auto;"
-    src="<?php echo $custom_meta['full_issue'] ?>"
+    style="display: block; width: 100%; max-width: 200px; height: auto;"
+    src="<?php echo wp_get_attachment_url(get_post_thumbnail_id($post->ID)) ?>"
   />
 <?php
 }
@@ -108,14 +85,12 @@ if (!empty($custom_meta['full_issue'])) {
 
 <br /><br />
 
-<label for="content">Credits (Sample format below):</label>
+<label for="content">Content (Sample format below):</label>
 <p style="margin-top: 0; margin-bottom: 0; padding-left: 16px;">
-  Written by <br />
-  [Author 1], [Author 2], and [Author 3] <br />
-  Photos by <br />
-  [Photographer 1] <br />
-  Designed by <br />
-  [Designer 1] and [Designer 2]
+  [Title 1] <br />
+  [Author 1] <br />
+  [Title 2] <br />
+  [Author 1], [Author 2], and [Author 3]
 </p>
 <textarea
   class="widefat"
