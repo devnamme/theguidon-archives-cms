@@ -63,7 +63,7 @@ function archivescms_get_articles() {
 
 
 add_action('rest_api_init', function() {
-  register_rest_route('wp/v2', 'issues', array(
+  register_rest_route('api/v1', 'issues', array(
       'methods' => 'GET',
       'callback' => 'archivescms_get_articles'
   ));
