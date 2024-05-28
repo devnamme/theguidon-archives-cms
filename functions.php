@@ -47,7 +47,7 @@ function archivescms_get_articles() {
       'title' => get_the_title(),
       'date_published' => get_the_date('c'),
       'description' => get_post_meta($query->post->ID, 'description', true),
-      'is_legacy' => get_post_meta($query->post->ID, 'is_legacy', true),
+      'is_legacy' => get_post_meta($query->post->ID, 'is_legacy', true) == "true" ? true : false,
       'num_pages' => get_post_meta($query->post->ID, 'num_pages', true),
       'shortlink' => get_post_meta($query->post->ID, 'shortlink', true),
       'full_issue' => get_post_meta($query->post->ID, 'full_issue', true),
