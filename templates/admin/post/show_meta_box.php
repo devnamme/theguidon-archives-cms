@@ -45,6 +45,15 @@ function archivescms_issue_show_meta_box() {
   style="resize: none"
 ><?php echo $custom_meta['description'] ?></textarea><br /><br />
 
+<input
+  type="checkbox"
+  id="is_legacy"
+  name="is_legacy"
+  value="true"
+  <?php if (strtolower(trim($custom_meta['is_legacy'])) == "true") { echo "checked"; } ?>
+/>
+<label for="is_legacy">Is Legacy?</label><br /><br />
+
 <label for="num_pages">Number of Pages</label><br />
 <input
   class="widefat"
