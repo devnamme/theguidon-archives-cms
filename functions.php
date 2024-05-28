@@ -50,6 +50,7 @@ function archivescms_get_articles() {
       'is_legacy' => get_post_meta($query->post->ID, 'is_legacy', true) == "true" ? true : false,
       'num_pages' => get_post_meta($query->post->ID, 'num_pages', true),
       'shortlink' => get_post_meta($query->post->ID, 'shortlink', true),
+      'cover' => wp_get_attachment_url(get_post_thumbnail_id($query->post->ID)),
       'full_issue' => get_post_meta($query->post->ID, 'full_issue', true),
       'content' => get_post_meta($query->post->ID, 'content', true),
       'categories' => $categories,
