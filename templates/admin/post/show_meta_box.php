@@ -3,13 +3,21 @@
 function archivescms_issue_show_meta_box() {
   global $post;
 
-  $description = get_post_meta($post->ID, 'description', true);
-  $path = get_post_meta($post->ID, 'path', true);
-  $bylines = get_post_meta($post->ID, 'bylines', true);
-  $shortlink = get_post_meta($post->ID, 'shortlink', true);
+  $custom_meta = array();
+  $keys = array(
+    'fixed_slug',
+    'description',
+    'is_legacy',
+    'num_pages',
+    'shortlink',
+    'front_page',
+    'full_issue',
+    'content',
+  );
 
-  $preview_image = get_post_meta($post->ID, 'preview_image', true);
-  $preview_video = get_post_meta($post->ID, 'preview_video', true);
+  foreach ($keys as $key) {
+    $custom_meta[$key] = get_post_meta($post->ID, $key, true);
+  }
 ?>
 
 <input
@@ -19,6 +27,15 @@ function archivescms_issue_show_meta_box() {
   value="<?php echo wp_create_nonce(basename(__FILE__)) ?>"
 />
 
+<label for="fixed_slug">Fixed Slug</label><br />
+<input
+  class="widefat"
+  type="text"
+  name="fixed_slug"
+  id="fixed_slug"
+  value="<?php echo $custom_meta['fixed_slug'] ?>"
+/><br /><br />
+
 <label for="description">Description</label><br />
 <textarea
   class="widefat"
@@ -27,18 +44,71 @@ function archivescms_issue_show_meta_box() {
   id="description"
   rows="5"
   style="resize: none"
-><?php echo $description ?></textarea><br />
+><?php echo $custom_meta['description'] ?></textarea><br /><br />
 
-<label for="path">Path</label><br />
+<label for="num_pages">Number of Pages</label><br />
 <input
   class="widefat"
-  type="text"
-  name="path"
-  id="path"
-  value="<?php echo $path ?>"
+  type="number"
+  name="num_pages"
+  id="num_pages"
+  value="<?php echo $custom_meta['num_pages'] ?>"
 /><br /><br />
 
-<label for="bylines">Credits (Sample format below):</label>
+<label for="shortlink">Shortlink URL (tgdn.co)</label><br />
+<input
+  class="widefat"
+  type="url"
+  name="shortlink"
+  id="shortlink"
+  value="<?php echo $custom_meta['shortlink'] ?>"
+/><br /><br />
+
+<label for="front_page">Upload Front Page or Cover</label><br />
+<input
+  class="widefat"
+  type="file"
+  accept="image/*"
+  name="front_page"
+  id="front_page"
+/>
+
+<?php
+if (!empty($custom_meta['front_page'])) {
+?>
+  <img
+    style="display: block; width: 100%; max-width: 400px; height: auto;"
+    src="<?php echo $custom_meta['front_page'] ?>"
+  />
+<?php
+}
+?>
+
+<br /><br />
+
+<label for="full_issue">Upload Full Issue (PDF)</label><br />
+<input
+  class="widefat"
+  type="file"
+  accept="image/*"
+  name="full_issue"
+  id="full_issue"
+/>
+
+<?php
+if (!empty($custom_meta['full_issue'])) {
+?>
+  <img
+    style="display: block; width: 100%; max-width: 400px; height: auto;"
+    src="<?php echo $custom_meta['full_issue'] ?>"
+  />
+<?php
+}
+?>
+
+<br /><br />
+
+<label for="content">Credits (Sample format below):</label>
 <p style="margin-top: 0; margin-bottom: 0; padding-left: 16px;">
   Written by <br />
   [Author 1], [Author 2], and [Author 3] <br />
@@ -50,62 +120,11 @@ function archivescms_issue_show_meta_box() {
 <textarea
   class="widefat"
   type="text"
-  name="bylines"
-  id="bylines"
+  name="content"
+  id="content"
   rows="10"
   style="resize: none"
-><?php echo $bylines ?></textarea><br />
-
-<label for="shortlink">Shortlink URL (tgdn.co)</label><br />
-<input
-  class="widefat"
-  type="url"
-  name="shortlink"
-  id="shortlink"
-  value="<?php echo $shortlink ?>"
-/><br />
-
-<label for="preview_image">Upload Preview Image</label><br />
-<input
-  class="widefat"
-  type="file"
-  accept="image/*"
-  name="preview_image"
-  id="preview_image"
-/>
-
-<?php
-if (!empty($preview_image)) {
-?>
-  <img
-    style="display: block; width: 100%; max-width: 400px; height: auto;"
-    src="<?php echo $preview_image ?>"
-  />
-<?php
-}
-?>
-
-<label for="preview_video">Upload Preview Video</label><br />
-<input
-  class="widefat"
-  type="file"
-  accept="video/*"
-  name="preview_video"
-  id="preview_video"
-/>
-
-<?php
-if (!empty($preview_video)) {
-?>
-  <video
-    style="display: block; width: 100%; max-width: 400px; height: auto;"
-  >
-    <source src="<?php echo $preview_video ?>" />
-  </video>
-<?php
-}
-?>
-
+><?php echo $custom_meta['content'] ?></textarea><br /><br />
 
 <?php
 }
