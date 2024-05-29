@@ -58,7 +58,9 @@ function archivescms_get_issues($req) {
   wp_reset_postdata();
 
   return rest_ensure_response(array(
+    'page' => intval($page),
     'max_pages' => $query->max_num_pages,
+    'categ' => $categ,
     'found' => $query->found_posts,
     'issues' => $issues,
   ));
