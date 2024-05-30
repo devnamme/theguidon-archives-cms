@@ -69,6 +69,10 @@ function archivescms_get_issues($req) {
   $page = $req->get_param('page');
   $args['paged'] = isset($page) ? intval($page) : 1;
 
+  $order = $req->get_param('order');
+  if (isset($order) && ($order == 'asc' || $order == 'desc'))
+    $args['order'] = $order;
+
   $query = new WP_Query($args);
   $issues = array();
 
@@ -81,6 +85,7 @@ function archivescms_get_issues($req) {
   return rest_ensure_response(array(
     'page' => isset($page) ? intval($page) : 1,
     'max_pages' => $query->max_num_pages,
+    'order' => isset($order) ? (($order == 'asc' || $order == 'desc') ? $order : 'desc') : 'desc',
     'categ' => $categ,
     'found' => $query->found_posts,
     'issues' => $issues,
