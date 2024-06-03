@@ -48,7 +48,8 @@ function archivescms_issue_response($query) {
     'is_legacy' => get_post_meta($query->post->ID, 'is_legacy', true) == "true" ? true : false,
     'num_pages' => intval(get_post_meta($query->post->ID, 'num_pages', true)),
     'shortlink' => get_post_meta($query->post->ID, 'shortlink', true),
-    'cover' => wp_get_attachment_url(get_post_thumbnail_id($query->post->ID)),
+    'cover_full' => wp_get_attachment_url(get_post_thumbnail_id($query->post->ID)),
+    'cover' => wp_get_attachment_image_src(get_post_thumbnail_id($query->post->ID), 'large')[0],
     // 'full_issue' => get_post_meta($query->post->ID, 'full_issue', true),
     'full_issue' => '/issues/' . get_the_date('Y') . '/' . get_post_meta($query->post->ID, 'fixed_slug', true) . '.pdf',
     'content' => get_post_meta($query->post->ID, 'content', true),
@@ -73,6 +74,10 @@ function archivescms_get_issues($req) {
   if (isset($order) && ($order == 'asc' || $order == 'desc'))
     $args['order'] = $order;
 
+  $search = $req->get_param('search');
+  if (isset($search))
+    $args['search_query'] = $search;
+
   $query = new WP_Query($args);
   $issues = array();
 
@@ -87,6 +92,7 @@ function archivescms_get_issues($req) {
     'max_pages' => $query->max_num_pages,
     'order' => isset($order) ? (($order == 'asc' || $order == 'desc') ? $order : 'desc') : 'desc',
     'categ' => $categ,
+    'search' => $search,
     'found' => $query->found_posts,
     'issues' => $issues,
   ));
@@ -156,10 +162,20 @@ add_action('rest_api_init', function() {
 add_theme_support('post-thumbnails'); 
 add_filter('post_thumbnail_html', 'my_post_image_html', 10, 3);
 
-// adds the permalink automaticall to the featured image, based on Wordpress Codex
+// adds the permalink automatically to the featured image, based on Wordpress Codex
 function my_post_image_html($html, $post_id, $post_image_id) {
   $html = '<a href="' . get_permalink( $post_id ) . '" title="' . esc_attr( get_the_title( $post_id ) ) . '">' . $html . '</a>';
   return $html;
+}
+
+
+add_filter('posts_where', 'archivescms_posts_where', 10, 2);
+function archivescms_posts_where($where, $wp_query) {
+  global $wpdb;
+  if ($search_query = $wp_query->get('search_query')) {
+    $where .= ' AND ' . $wpdb->posts . '.post_title LIKE \'%' . esc_sql($wpdb->esc_like($search_query)) . '%\'';
+  }
+  return $where;
 }
 
 ?>
