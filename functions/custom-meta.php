@@ -91,6 +91,8 @@ function archivescms_issue_save_custom_meta($post_id, $post, $update) {
     'is_legacy',
     'num_pages',
     'shortlink',
+    'volume_num',
+    'issue_num',
     'content',
   ));
 

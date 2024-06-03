@@ -40,6 +40,9 @@ function archivescms_issue_response($query) {
     $categories[] = $categ->slug;
   }
 
+  $volume_num = get_post_meta($query->post->ID, 'volume_num', true);
+  $issue_num = get_post_meta($query->post->ID, 'issue_num', true);
+
   return array(
     'fixed_slug' => get_post_meta($query->post->ID, 'fixed_slug', true),
     'title' => get_the_title(),
@@ -48,6 +51,8 @@ function archivescms_issue_response($query) {
     'is_legacy' => get_post_meta($query->post->ID, 'is_legacy', true) == "true" ? true : false,
     'num_pages' => intval(get_post_meta($query->post->ID, 'num_pages', true)),
     'shortlink' => get_post_meta($query->post->ID, 'shortlink', true),
+    'volume_num' => empty($volume_num) ? null : intval($volume_num),
+    'issue_num' => empty($issue_num) ? null : intval($issue_num),
     'cover_full' => wp_get_attachment_url(get_post_thumbnail_id($query->post->ID)),
     'cover' => wp_get_attachment_image_src(get_post_thumbnail_id($query->post->ID), 'large')[0],
     // 'full_issue' => get_post_meta($query->post->ID, 'full_issue', true),

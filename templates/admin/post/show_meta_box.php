@@ -10,7 +10,9 @@ function archivescms_issue_show_meta_box() {
     'is_legacy',
     'num_pages',
     'shortlink',
-    'full_issue',
+    'volume_num',
+    'issue_num',
+    // 'full_issue',
     'content',
   );
 
@@ -72,7 +74,25 @@ function archivescms_issue_show_meta_box() {
   value="<?php echo $custom_meta['shortlink'] ?>"
 /><br /><br />
 
-<label for="full_issue">Upload Full Issue (PDF)</label><br />
+<label for="volume_num">Volume No.</label><br />
+<input
+  class="widefat"
+  type="number"
+  name="volume_num"
+  id="volume_num"
+  value="<?php echo $custom_meta['volume_num'] ?>"
+/><br /><br />
+
+<label for="issue_num">Issue No.</label><br />
+<input
+  class="widefat"
+  type="number"
+  name="issue_num"
+  id="issue_num"
+  value="<?php echo $custom_meta['issue_num'] ?>"
+/><br /><br />
+
+<!-- <label for="full_issue">Upload Full Issue (PDF)</label><br />
 <input
   class="widefat"
   type="file"
@@ -92,7 +112,7 @@ if (has_post_thumbnail($post) && !empty($custom_meta['full_issue'])) {
 }
 ?>
 
-<br /><br />
+<br /><br /> -->
 
 <label for="content">Content (Sample format below):</label>
 <p style="margin-top: 0; margin-bottom: 0; padding-left: 16px;">
