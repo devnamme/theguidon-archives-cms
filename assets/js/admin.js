@@ -65,7 +65,7 @@ function acms_content_add_author(button) {
 
 function acms_content_update() {
   jQuery(function ($) {
-    let json_textarea = $("textarea#content[name=content]");
+    let json_textarea = $("textarea#article_content[name=article_content]");
     let data = [];
 
     $("#acms-content.sections .section").each(function (i) {

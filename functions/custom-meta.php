@@ -93,7 +93,7 @@ function archivescms_issue_save_custom_meta($post_id, $post, $update) {
     'shortlink',
     'volume_num',
     'issue_num',
-    'content',
+    'article_content',
   ));
 
   archivescms_save_post_custom_meta_files($post_id, $_POST['fixed_slug'], array(

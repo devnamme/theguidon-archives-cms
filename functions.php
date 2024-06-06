@@ -57,7 +57,7 @@ function archivescms_issue_response($query) {
     'cover' => wp_get_attachment_image_src(get_post_thumbnail_id($query->post->ID), 'large')[0],
     // 'full_issue' => get_post_meta($query->post->ID, 'full_issue', true),
     'full_issue' => '/issues/' . get_the_date('Y') . '/' . get_post_meta($query->post->ID, 'fixed_slug', true) . '.pdf',
-    'content' => get_post_meta($query->post->ID, 'content', true),
+    'article_content' => get_post_meta($query->post->ID, 'content', true),
     'categories' => $categories,
   );
 }

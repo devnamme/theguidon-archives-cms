@@ -13,7 +13,7 @@ function archivescms_issue_show_meta_box() {
     'volume_num',
     'issue_num',
     // 'full_issue',
-    'content',
+    'article_content',
   );
 
   foreach ($keys as $key) {
@@ -128,12 +128,12 @@ if (has_post_thumbnail($post) && !empty($custom_meta['full_issue'])) {
 <textarea
   class="widefat"
   type="text"
-  name="content"
-  id="content"
+  name="article_content"
+  id="article_content"
   rows="10"
   style="resize: none; font-family: monospace;"
   oninput="acms_content_queue_override()"
-><?php echo $custom_meta['content'] ?></textarea><br /><br />
+><?php echo $custom_meta['article_content'] ?></textarea><br /><br />
 
 <label>Content (user-friendly)</label>
 <div id="acms-content" class="sections column">
