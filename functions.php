@@ -194,4 +194,19 @@ function archivescms_posts_where($where, $wp_query) {
   return $where;
 }
 
+
+/**
+ * Main CSS
+ */
+function archivescms_register_files() {
+  $version = wp_get_theme()->get('Version');
+
+  wp_enqueue_style('styles-admin', get_template_directory_uri() . '/assets/css/admin.css', array(), $version);
+
+  wp_enqueue_script('jquery', get_template_directory_uri() . 'assets/js/jquery-3.6.0.min.js', array(), $version);
+  wp_enqueue_script('scripts-admin', get_template_directory_uri() . '/assets/js/admin.js', array('jquery'), $version);
+}
+
+add_action('admin_enqueue_scripts', 'archivescms_register_files');
+
 ?>

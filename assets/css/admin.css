@@ -1,0 +1,73 @@
+#acms-content {
+  --indent: 16px;
+}
+
+#acms-content .row {
+  display: flex;
+  flex-flow: row nowrap;
+  column-gap: 8px;
+}
+
+#acms-content .column {
+  display: flex;
+  flex-flow: column nowrap;
+  row-gap: 8px;
+}
+
+#acms-content .button.add {
+  width: fit-content;
+}
+
+#acms-content .articles {
+  margin-top: 8px;
+  margin-left: var(--indent);
+}
+
+/* #acms-content .article {
+  border-bottom: 1px solid gray;
+} */
+
+#acms-content .article .page-num {
+  width: 36px;
+  text-align: center;
+}
+
+#acms-content .article .authors {
+  margin: 8px 0 0 var(--indent);
+
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  column-gap: 8px;
+  row-gap: 8px;
+}
+
+#acms-content .article .authors .button.add {
+  grid-column: 1 / -1;
+}
+
+#acms-content input[type="number"]::-webkit-outer-spin-button,
+#acms-content input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+#acms-content input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+@media screen and (max-width: 1200px) {
+  
+}
+
+@media screen and (max-width: 992px) {
+  
+}
+
+@media screen and (max-width: 768px) {
+  
+}
+
+@media screen and (max-width: 576px) {
+  
+}

@@ -74,23 +74,30 @@ function archivescms_issue_show_meta_box() {
   value="<?php echo $custom_meta['shortlink'] ?>"
 /><br /><br />
 
-<label for="volume_num">Volume No.</label><br />
-<input
-  class="widefat"
-  type="number"
-  name="volume_num"
-  id="volume_num"
-  value="<?php echo $custom_meta['volume_num'] ?>"
-/><br /><br />
+<div style="display: flex; flex-flow: row wrap; row-gap: 8px; column-gap: 16px;">
+  <div style="flex-basis: 100px; flex-grow: 1;">
+    <label for="volume_num">Volume No.</label><br />
+    <input
+      class="widefat"
+      type="number"
+      name="volume_num"
+      id="volume_num"
+      value="<?php echo $custom_meta['volume_num'] ?>"
+    />
+  </div>
+  <div style="flex-basis: 100px; flex-grow: 1;">
+    <label for="issue_num">Issue No.</label><br />
+    <input
+      class="widefat"
+      type="number"
+      name="issue_num"
+      id="issue_num"
+      value="<?php echo $custom_meta['issue_num'] ?>"
+    />
+  </div>
+</div>
 
-<label for="issue_num">Issue No.</label><br />
-<input
-  class="widefat"
-  type="number"
-  name="issue_num"
-  id="issue_num"
-  value="<?php echo $custom_meta['issue_num'] ?>"
-/><br /><br />
+<br />
 
 <!-- <label for="full_issue">Upload Full Issue (PDF)</label><br />
 <input
@@ -114,13 +121,7 @@ if (has_post_thumbnail($post) && !empty($custom_meta['full_issue'])) {
 
 <br /><br /> -->
 
-<label for="content">Content (Sample format below):</label>
-<p style="margin-top: 0; margin-bottom: 0; padding-left: 16px;">
-  [Title 1] <br />
-  [Author 1] <br />
-  [Title 2] <br />
-  [Author 1], [Author 2], and [Author 3]
-</p>
+<label for="content">Content (in JSON string)</label>
 <textarea
   class="widefat"
   type="text"
@@ -129,6 +130,22 @@ if (has_post_thumbnail($post) && !empty($custom_meta['full_issue'])) {
   rows="10"
   style="resize: none"
 ><?php echo $custom_meta['content'] ?></textarea><br /><br />
+
+<label>Content (user-friendly)</label>
+<div id="acms-content">
+  <div class="sections column">
+    <button class="button add" onclick="acms_content_add_section(this)">Add section</button>
+  </div>
+</div>
+<br />
+
+<!-- <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" width="24" height="24" aria-hidden="true" focusable="false">
+  <path d="M6.5 12.4L12 8l5.5 4.4-.9 1.2L12 10l-4.5 3.6-1-1.2z"></path>
+</svg>
+
+<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" width="24" height="24" aria-hidden="true" focusable="false">
+  <path d="M17.5 11.6L12 16l-5.5-4.4.9-1.2L12 14l4.5-3.6 1 1.2z"></path>
+</svg> -->
 
 <?php
 }
