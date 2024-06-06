@@ -16,7 +16,8 @@
   row-gap: 8px;
 }
 
-#acms-content .button.add {
+#acms-content .button.add,
+#acms-content .button.update {
   width: fit-content;
 }
 

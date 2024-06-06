@@ -122,19 +122,23 @@ if (has_post_thumbnail($post) && !empty($custom_meta['full_issue'])) {
 <br /><br /> -->
 
 <label for="content">Content (in JSON string)</label>
+<p style="margin: 0; color: red;">
+  Do not edit this unless you know what you're doing. Editing this manually will override the UI below. Please the documentation on <a href="https://github.com/theguidon/theguidon-archives" target="_blank" style="color: inherit">GitHub</a> to find relevant information on making this work.
+</p>
 <textarea
   class="widefat"
   type="text"
   name="content"
   id="content"
   rows="10"
-  style="resize: none"
-  placeholder="Do not edit this unless you know what you're doing - Emman"
+  style="resize: none; font-family: monospace;"
+  oninput="acms_content_queue_override()"
 ><?php echo $custom_meta['content'] ?></textarea><br /><br />
 
 <label>Content (user-friendly)</label>
 <div id="acms-content" class="sections column">
   <button class="button add" onclick="acms_content_add_section(this)">Add section</button>
+  <button class="button update" onclick="acms_content_update()">Update</button>
 </div>
 <br />
 
