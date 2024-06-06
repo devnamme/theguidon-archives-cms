@@ -68,8 +68,19 @@ function archivescms_get_issues($req) {
     'posts_per_page' => 20,
   );
 
+  $isLegacy = $req->get_param('legacy');
+  if (isset($isLegacy) && $isLegacy == 'true') {
+    $args['meta_query'] = array(
+      array(
+        'key' => 'is_legacy',
+        'value' => 'true',
+        'compare' => '=',
+      ),
+    );
+  }
+
   $categ = $req->get_param('categ');
-  if (isset($categ))
+  if (isset($categ) && $categ != 'legacy')
     $args['category_name'] = $categ;
 
   $page = $req->get_param('page');
@@ -96,7 +107,7 @@ function archivescms_get_issues($req) {
     'page' => isset($page) ? intval($page) : 1,
     'max_pages' => $query->max_num_pages,
     'order' => isset($order) ? (($order == 'asc' || $order == 'desc') ? $order : 'desc') : 'desc',
-    'categ' => $categ,
+    'categ' => $isLegacy == 'true' ? 'legacy' : $categ,
     'search' => $search,
     'found' => $query->found_posts,
     'issues' => $issues,
