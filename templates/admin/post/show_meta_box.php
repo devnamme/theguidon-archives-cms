@@ -129,13 +129,12 @@ if (has_post_thumbnail($post) && !empty($custom_meta['full_issue'])) {
   id="content"
   rows="10"
   style="resize: none"
+  placeholder="Do not edit this unless you know what you're doing - Emman"
 ><?php echo $custom_meta['content'] ?></textarea><br /><br />
 
 <label>Content (user-friendly)</label>
-<div id="acms-content">
-  <div class="sections column">
-    <button class="button add" onclick="acms_content_add_section(this)">Add section</button>
-  </div>
+<div id="acms-content" class="sections column">
+  <button class="button add" onclick="acms_content_add_section(this)">Add section</button>
 </div>
 <br />
 

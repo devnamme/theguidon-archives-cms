@@ -2,13 +2,15 @@
   --indent: 16px;
 }
 
-#acms-content .row {
+#acms-content .row,
+#acms-content.row {
   display: flex;
   flex-flow: row nowrap;
   column-gap: 8px;
 }
 
-#acms-content .column {
+#acms-content .column,
+#acms-content.column {
   display: flex;
   flex-flow: column nowrap;
   row-gap: 8px;
