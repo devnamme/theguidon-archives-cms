@@ -89,6 +89,7 @@ function archivescms_issue_save_custom_meta($post_id, $post, $update) {
     'fixed_slug',
     'description',
     'is_legacy',
+    'unsure_date',
     'num_pages',
     'shortlink',
     'volume_num',

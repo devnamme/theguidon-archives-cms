@@ -8,6 +8,7 @@ function archivescms_issue_show_meta_box() {
     'fixed_slug',
     'description',
     'is_legacy',
+    'unsure_date',
     'num_pages',
     'shortlink',
     'volume_num',
@@ -54,7 +55,16 @@ function archivescms_issue_show_meta_box() {
   value="true"
   <?php if (strtolower(trim($custom_meta['is_legacy'])) == "true") { echo "checked"; } ?>
 />
-<label for="is_legacy">Is Legacy?</label><br /><br />
+<label for="is_legacy">Is Legacy?</label><br />
+
+<input
+  type="checkbox"
+  id="unsure_date"
+  name="unsure_date"
+  value="true"
+  <?php if (strtolower(trim($custom_meta['unsure_date'])) == "true") { echo "checked"; } ?>
+/>
+<label for="unsure_date">Unsure published date?</label><br /><br />
 
 <label for="num_pages">Number of Pages</label><br />
 <input
