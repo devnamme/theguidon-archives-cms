@@ -42,6 +42,7 @@ function archivescms_issue_response($query) {
 
   $volume_num = get_post_meta($query->post->ID, 'volume_num', true);
   $issue_num = get_post_meta($query->post->ID, 'issue_num', true);
+  $article_content = get_post_meta($query->post->ID, 'article_content', true);
 
   return array(
     'fixed_slug' => get_post_meta($query->post->ID, 'fixed_slug', true),
@@ -57,7 +58,7 @@ function archivescms_issue_response($query) {
     'cover' => wp_get_attachment_image_src(get_post_thumbnail_id($query->post->ID), 'large')[0],
     // 'full_issue' => get_post_meta($query->post->ID, 'full_issue', true),
     'full_issue' => '/issues/' . get_the_date('Y') . '/' . get_post_meta($query->post->ID, 'fixed_slug', true) . '.pdf',
-    'article_content' => get_post_meta($query->post->ID, 'content', true),
+    'article_content' => empty($article_content) ? '[]' : $article_content,
     'categories' => $categories,
   );
 }
@@ -91,8 +92,16 @@ function archivescms_get_issues($req) {
     $args['order'] = $order;
 
   $search = $req->get_param('search');
-  if (isset($search))
+  if (isset($search)) {
     $args['search_query'] = $search;
+    $args['meta_query'] = array(
+      array(
+        'key' => 'article_content',
+        'value' => $search,
+        'compare' => 'LIKE',
+      ),
+    );
+  }
 
   $query = new WP_Query($args);
   $issues = array();
@@ -185,14 +194,28 @@ function my_post_image_html($html, $post_id, $post_image_id) {
 }
 
 
-add_filter('posts_where', 'archivescms_posts_where', 10, 2);
-function archivescms_posts_where($where, $wp_query) {
-  global $wpdb;
-  if ($search_query = $wp_query->get('search_query')) {
-    $where .= ' AND ' . $wpdb->posts . '.post_title LIKE \'%' . esc_sql($wpdb->esc_like($search_query)) . '%\'';
+/**
+ * https://wordpress.stackexchange.com/questions/178484/wp-query-args-title-or-meta-value
+ */
+add_action('pre_get_posts', function($query) {
+  if ($search_query = $query->get('search_query') )   {
+    add_filter('get_meta_sql', function($sql) use ($search_query) {
+      global $wpdb;
+
+      // Only run once:
+      static $nr = 0; 
+      if (0 != $nr++) return $sql;
+
+      // Modify WHERE part:
+      $sql['where'] = sprintf(
+        " AND (%s OR %s) ",
+        $wpdb->prepare("{$wpdb->posts}.post_title LIKE %s", '%' . $search_query . '%'),
+        mb_substr($sql['where'], 5, mb_strlen($sql['where']))
+      );
+      return $sql;
+    });
   }
-  return $where;
-}
+});
 
 
 /**
