@@ -146,6 +146,64 @@ function archivescms_get_issue($req) {
 }
 
 
+function archivescms_get_random_covers() {
+  $covers = array(
+    'standard' => array(),
+    'legacy' => array(),
+  );
+
+  $standard_query = new WP_Query(array(
+    'posts_per_page' => 3,
+    'orderby' => 'rand',
+    'meta_query' => array(
+      'relation' => 'OR',
+      array(
+        'key' => 'is_legacy',
+        'value' => 'true',
+        'compare' => '!=',
+      ),
+      array(
+        'key' => 'is_legacy',
+        'compare' => 'NOT EXISTS',
+      ),
+    ),
+  ));
+
+  $legacy_query = new WP_Query(array(
+    'posts_per_page' => 3,
+    'orderby' => 'rand',
+    'meta_query' => array(
+      array(
+        'key' => 'is_legacy',
+        'value' => 'true',
+        'compare' => '=',
+      )
+    ),
+  ));
+
+  while ($standard_query->have_posts()) {
+    $standard_query->the_post();
+    $covers['standard'][] = wp_get_attachment_image_src(get_post_thumbnail_id($standard_query->post->ID), 'medium')[0];
+  }
+  wp_reset_postdata();
+
+  while ($legacy_query->have_posts()) {
+    $legacy_query->the_post();
+    $covers['legacy'][] = wp_get_attachment_image_src(get_post_thumbnail_id($legacy_query->post->ID), 'medium')[0];
+  }
+  wp_reset_postdata();
+
+  // TODO REMOVE BEFORE PRODUCTION
+  for ($i = 0; $i < 3; $i++) {
+    if (count($covers['legacy']) <= $i) {
+      $covers['legacy'][] = $covers['legacy'][0];
+    }
+  }
+
+  return rest_ensure_response($covers);
+}
+
+
 add_action('rest_api_init', function() {
   /**
    * GET /issues
@@ -171,18 +229,12 @@ add_action('rest_api_init', function() {
   ));
 
   /**
-   * GET /legacy
-   * ?categ
-   * ?page
+   * GET /random-covers
    */
-  // register_rest_route('api/v1', 'legacy', array(
-  //   'methods' => 'GET',
-  //   'callback' => 'archivescms_get_legacy',
-  // ));
-
-  /**
-   * GET /search
-   */
+  register_rest_route('api/v1', 'random-covers', array(
+    'methods' => 'GET',
+    'callback' => 'archivescms_get_random_covers',
+  ));
 });
 
 
@@ -234,5 +286,11 @@ function archivescms_register_files() {
 }
 
 add_action('admin_enqueue_scripts', 'archivescms_register_files');
+
+
+/**
+ * remove texturize
+ */
+remove_filter('the_title', 'wptexturize');
 
 ?>
