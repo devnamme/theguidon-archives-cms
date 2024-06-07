@@ -88,7 +88,7 @@ function archivescms_get_issues($req) {
     $args['category_name'] = $categ;
 
   $page = $req->get_param('page');
-  $args['paged'] = isset($page) ? intval($page) : 1;
+  $args['paged'] = isset($page) && is_numeric($page) ? intval($page) : 1;
 
   $order = $req->get_param('order');
   if (isset($order) && ($order == 'asc' || $order == 'desc'))
@@ -102,6 +102,17 @@ function archivescms_get_issues($req) {
         'key' => 'article_content',
         'value' => $search,
         'compare' => 'LIKE',
+      ),
+    );
+  }
+
+  $year = $req->get_param('year');
+  if (isset($year) && is_numeric($year)) {
+    $args['date_query'] = array(
+      array(
+        'after' => array('year' => $year, 'month' => '1', 'day' => '1'),
+        'before' => array('year' => $year, 'month' => '12', 'day' => '31'),
+        'inclusive' => true,
       ),
     );
   }
@@ -120,6 +131,7 @@ function archivescms_get_issues($req) {
     'max_pages' => $query->max_num_pages,
     'order' => isset($order) ? (($order == 'asc' || $order == 'desc') ? $order : 'desc') : 'desc',
     'categ' => $isLegacy == 'true' ? 'legacy' : $categ,
+    'year' => isset($year) ? intval($year) : null,
     'search' => $search,
     'found' => $query->found_posts,
     'issues' => $issues,
