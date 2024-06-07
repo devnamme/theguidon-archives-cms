@@ -148,29 +148,41 @@ function archivescms_get_issue($req) {
 
 function archivescms_get_random_covers() {
   $covers = array(
-    'standard' => array(),
     'legacy' => array(),
   );
 
-  $standard_query = new WP_Query(array(
-    'posts_per_page' => 3,
-    'orderby' => 'rand',
-    'meta_query' => array(
-      'relation' => 'OR',
-      array(
-        'key' => 'is_legacy',
-        'value' => 'true',
-        'compare' => '!=',
+  $categs = array('press-issue', 'graduation-magazine', 'freshmanual', 'uaap-primer', 'other');
+  
+  foreach ($categs as $categ) {
+    $q = new WP_Query(array(
+      'posts_per_page' => 2,
+      'orderby' => 'rand',
+      'category_name' => $categ,
+      'meta_query' => array(
+        'relation' => 'OR',
+        array(
+          'key' => 'is_legacy',
+          'value' => 'true',
+          'compare' => '!=',
+        ),
+        array(
+          'key' => 'is_legacy',
+          'compare' => 'NOT EXISTS',
+        ),
       ),
-      array(
-        'key' => 'is_legacy',
-        'compare' => 'NOT EXISTS',
-      ),
-    ),
-  ));
+    ));
+
+    $covers[$categ] = array();
+
+    while ($q->have_posts()) {
+      $q->the_post();
+      $covers[$categ][] = wp_get_attachment_image_src(get_post_thumbnail_id($standard_query->post->ID), 'large')[0];
+    }
+    wp_reset_postdata();
+  }
 
   $legacy_query = new WP_Query(array(
-    'posts_per_page' => 3,
+    'posts_per_page' => 2,
     'orderby' => 'rand',
     'meta_query' => array(
       array(
@@ -181,26 +193,34 @@ function archivescms_get_random_covers() {
     ),
   ));
 
-  while ($standard_query->have_posts()) {
-    $standard_query->the_post();
-    $covers['standard'][] = wp_get_attachment_image_src(get_post_thumbnail_id($standard_query->post->ID), 'medium')[0];
-  }
-  wp_reset_postdata();
-
   while ($legacy_query->have_posts()) {
     $legacy_query->the_post();
-    $covers['legacy'][] = wp_get_attachment_image_src(get_post_thumbnail_id($legacy_query->post->ID), 'medium')[0];
+    $covers['legacy'][] = wp_get_attachment_image_src(get_post_thumbnail_id($legacy_query->post->ID), 'large')[0];
   }
   wp_reset_postdata();
 
   // TODO REMOVE BEFORE PRODUCTION
-  for ($i = 0; $i < 3; $i++) {
+  for ($i = 0; $i < 2; $i++) {
     if (count($covers['legacy']) <= $i) {
       $covers['legacy'][] = $covers['legacy'][0];
     }
   }
 
   return rest_ensure_response($covers);
+}
+
+
+function archivescms_get_minmax() {
+  $earliest = get_posts(array(
+    'numberposts' => 1,
+    'order_by' => 'publish_date',
+    'order' => 'ASC',
+  ));
+
+  return rest_ensure_response(array(
+    'min' => intval(get_the_date("Y", $earliest[0]->ID)),
+    'max' => intval(date("Y")),
+  ));
 }
 
 
@@ -234,6 +254,14 @@ add_action('rest_api_init', function() {
   register_rest_route('api/v1', 'random-covers', array(
     'methods' => 'GET',
     'callback' => 'archivescms_get_random_covers',
+  ));
+
+  /**
+   * GET /minmax-years
+   */
+  register_rest_route('api/v1', 'minmax', array(
+    'methods' => 'GET',
+    'callback' => 'archivescms_get_minmax',
   ));
 });
 
