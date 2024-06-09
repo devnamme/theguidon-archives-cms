@@ -117,6 +117,40 @@ function archivescms_get_issues($req) {
     );
   }
 
+
+  $date_query = array(
+    'inclusive' => true,
+  );
+
+  $from = $req->get_param('from');
+  if (isset($from)) {
+    $exp = explode('-', $from);
+    // if (count($exp) == 1)
+    //   $date_query['after'] = array('year' => $exp[0], 'month' => 1, 'day' => 1);
+    // else if (count($exp) == 2)
+    //   $date_query['after'] = array('year' => $exp[0], 'month' => $exp[1], 'day' => 1);
+    // else
+    if (count($exp) >= 3)
+      $date_query['after'] = array('year' => $exp[0], 'month' => $exp[1], 'day' => $exp[2]);
+  }
+
+  $until = $req->get_param('until');
+  if (isset($until)) {
+    $exp = explode('-', $until);
+    // if (count($exp) == 1)
+    //   $date_query['before'] = array('year' => $exp[0], 'month' => 12, 'day' => 31);
+    // else if (count($exp) == 2)
+    //   $date_query['before'] = array('year' => $exp[0], 'month' => $exp[1]);
+    // else
+    if (count($exp) >= 3)
+      $date_query['before'] = array('year' => $exp[0], 'month' => $exp[1], 'day' => $exp[2]);
+  }
+
+  if (count($date_query) > 0) {
+    $args['date_query'] = array($date_query);
+  }
+
+
   $query = new WP_Query($args);
   $issues = array();
 
@@ -132,6 +166,8 @@ function archivescms_get_issues($req) {
     'order' => isset($order) ? (($order == 'asc' || $order == 'desc') ? $order : 'desc') : 'desc',
     'categ' => $isLegacy == 'true' ? 'legacy' : $categ,
     'year' => isset($year) ? intval($year) : null,
+    'from' => $from,
+    'until' => $until,
     'search' => $search,
     'found' => $query->found_posts,
     'issues' => $issues,
@@ -230,8 +266,8 @@ function archivescms_get_minmax() {
   ));
 
   return rest_ensure_response(array(
-    'min' => intval(get_the_date("Y", $earliest[0]->ID)),
-    'max' => intval(date("Y")),
+    'min' => get_the_date("c", $earliest[0]->ID),
+    'max' => date("c"),
   ));
 }
 
