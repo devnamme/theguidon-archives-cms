@@ -15,6 +15,7 @@ function archivescms_issue_show_meta_box() {
     'issue_num',
     // 'full_issue',
     'article_content',
+    'contribs',
   );
 
   foreach ($keys as $key) {
@@ -131,7 +132,7 @@ if (has_post_thumbnail($post) && !empty($custom_meta['full_issue'])) {
 
 <br /><br /> -->
 
-<label for="content">Content (in JSON string)</label>
+<label for="article_content">Content (in JSON string)</label>
 <p style="margin: 0; color: red;">
   Do not edit this unless you know what you're doing. Editing this manually will override the UI below. Please the documentation on <a href="https://github.com/theguidon/theguidon-archives" target="_blank" style="color: inherit">GitHub</a> to find relevant information on making this work.
 </p>
@@ -151,6 +152,27 @@ if (has_post_thumbnail($post) && !empty($custom_meta['full_issue'])) {
   <button class="button update" onclick="acms_content_update()">Update</button>
 </div>
 <br />
+
+<label for="contribs">Contributors (in JSON string)</label>
+<p style="margin: 0; color: red;">
+  Do not edit this unless you know what you're doing. Editing this manually will override the UI below. Please the documentation on <a href="https://github.com/theguidon/theguidon-archives" target="_blank" style="color: inherit">GitHub</a> to find relevant information on making this work.
+</p>
+<textarea
+  class="widefat"
+  type="text"
+  name="contribs"
+  id="contribs"
+  rows="10"
+  style="resize: none; font-family: monospace;"
+  oninput="acms_content_queue_override()"
+><?php echo $custom_meta['contribs'] ?></textarea><br /><br />
+
+<label>Contributors (user-friendly)</label>
+<div id="acms-contribs" class="groups column">
+  <button class="button add" onclick="acms_contribs_add_group(this)">Add group</button>
+  <button class="button update" onclick="acms_contribs_update()">Update</button>
+</div>
+
 
 <!-- <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" width="24" height="24" aria-hidden="true" focusable="false">
   <path d="M6.5 12.4L12 8l5.5 4.4-.9 1.2L12 10l-4.5 3.6-1-1.2z"></path>

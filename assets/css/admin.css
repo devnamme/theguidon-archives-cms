@@ -1,27 +1,35 @@
-#acms-content {
+#acms-content,
+#acms-contribs {
   --indent: 16px;
 }
 
 #acms-content .row,
-#acms-content.row {
+#acms-content.row,
+#acms-contribs .row,
+#acms-contribs.row {
   display: flex;
   flex-flow: row nowrap;
   column-gap: 8px;
 }
 
 #acms-content .column,
-#acms-content.column {
+#acms-content.column,
+#acms-contribs .column,
+#acms-contribs.column {
   display: flex;
   flex-flow: column nowrap;
   row-gap: 8px;
 }
 
 #acms-content .button.add,
-#acms-content .button.update {
+#acms-content .button.update,
+#acms-contribs .button.add,
+#acms-contribs .button.update {
   width: fit-content;
 }
 
-#acms-content .articles {
+#acms-content .articles,
+#acms-contribs .people {
   margin-top: 8px;
   margin-left: var(--indent);
 }
@@ -31,20 +39,26 @@
 } */
 
 #acms-content .article .page-num {
-  width: 36px;
+  width: 48px;
   text-align: center;
 }
 
-#acms-content .article .authors {
+#acms-content .article .authors,
+#acms-contribs .people {
   margin: 8px 0 0 var(--indent);
 
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  column-gap: 8px;
+  column-gap: 16px;
   row-gap: 8px;
 }
 
-#acms-content .article .authors .button.add {
+#acms-contribs .people {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+#acms-content .article .authors .button.add,
+#acms-contribs .people .button.add {
   grid-column: 1 / -1;
 }
 
