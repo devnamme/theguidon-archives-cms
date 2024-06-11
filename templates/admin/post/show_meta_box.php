@@ -110,28 +110,6 @@ function archivescms_issue_show_meta_box() {
 
 <br />
 
-<!-- <label for="full_issue">Upload Full Issue (PDF)</label><br />
-<input
-  class="widefat"
-  type="file"
-  accept="application/pdf"
-  name="full_issue"
-  id="full_issue"
-/>
-
-<?php
-if (has_post_thumbnail($post) && !empty($custom_meta['full_issue'])) {
-?>
-  <img
-    style="display: block; width: 100%; max-width: 200px; height: auto;"
-    src="<?php echo wp_get_attachment_url(get_post_thumbnail_id($post->ID)) ?>"
-  />
-<?php
-}
-?>
-
-<br /><br /> -->
-
 <label for="article_content">Content (in JSON string)</label>
 <p style="margin: 0; color: red;">
   Do not edit this unless you know what you're doing. Editing this manually will override the UI below. Please the documentation on <a href="https://github.com/theguidon/theguidon-archives" target="_blank" style="color: inherit">GitHub</a> to find relevant information on making this work.

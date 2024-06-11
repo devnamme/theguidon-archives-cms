@@ -95,11 +95,12 @@ function archivescms_issue_save_custom_meta($post_id, $post, $update) {
     'volume_num',
     'issue_num',
     'article_content',
+    'contribs',
   ));
 
-  archivescms_save_post_custom_meta_files($post_id, $_POST['fixed_slug'], array(
-    array('full_issue', 'issue'),
-  ));
+  // archivescms_save_post_custom_meta_files($post_id, $_POST['fixed_slug'], array(
+  //   array('full_issue', 'issue'),
+  // ));
 
 }
 add_action('save_post_post', 'archivescms_issue_save_custom_meta', 10, 3);
