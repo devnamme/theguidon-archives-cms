@@ -4,6 +4,14 @@ include 'templates/admin/post/show_meta_box.php';
 
 include 'functions/custom-meta.php';
 
+include 'functions/api/v1/issues.php';
+include 'functions/api/v1/issue.php';
+include 'functions/api/v1/minmax.php';
+include 'functions/api/v1/random.php';
+include 'functions/api/v1/table-issues.php';
+include 'functions/api/v1/table-content.php';
+include 'functions/api/v1/table-contributors.php';
+
 
 /**
  * CORS
@@ -69,292 +77,18 @@ function archivescms_issue_response($query) {
 }
 
 
-function archivescms_get_issues($req) {
-  $args = array(
-    'posts_per_page' => 20,
-  );
-
-  $isLegacy = $req->get_param('legacy');
-  if (isset($isLegacy) && $isLegacy == 'true') {
-    $args['meta_query'] = array(
-      array(
-        'key' => 'is_legacy',
-        'value' => 'true',
-        'compare' => '=',
-      ),
-    );
-  }
-
-  $categ = $req->get_param('categ');
-  if (isset($categ) && $categ != 'legacy')
-    $args['category_name'] = $categ;
-
-  $page = $req->get_param('page');
-  $args['paged'] = isset($page) && is_numeric($page) ? intval($page) : 1;
-
-  $order = $req->get_param('order');
-  if (isset($order) && ($order == 'asc' || $order == 'desc'))
-    $args['order'] = $order;
-
-  $volume = $req->get_param('volume');
-  $search = $req->get_param('search');
-  if (isset($volume)) {
-    $args['meta_query'] = array(
-      array(
-        'key' => 'volume_num',
-        'value' => $volume,
-      ),
-    );
-  } else if (isset($search)) {
-    $args['search_query'] = $search;
-    $args['meta_query'] = array(
-      'relation' => 'OR',
-      array(
-        'key' => 'article_content',
-        'value' => $search,
-        'compare' => 'LIKE',
-      ),
-      array(
-        'key' => 'contribs',
-        'value' => $search,
-        'compare' => 'LIKE',
-      ),
-    );
-  }
-
-  $year = $req->get_param('year');
-  if (isset($year) && is_numeric($year)) {
-    $args['date_query'] = array(
-      array(
-        'after' => array('year' => $year, 'month' => '1', 'day' => '1'),
-        'before' => array('year' => $year, 'month' => '12', 'day' => '31'),
-        'inclusive' => true,
-      ),
-    );
-  }
-
-
-  $date_query = array(
-    'inclusive' => true,
-  );
-
-  $from = $req->get_param('from');
-  if (isset($from)) {
-    $exp = explode('-', $from);
-    // if (count($exp) == 1)
-    //   $date_query['after'] = array('year' => $exp[0], 'month' => 1, 'day' => 1);
-    // else if (count($exp) == 2)
-    //   $date_query['after'] = array('year' => $exp[0], 'month' => $exp[1], 'day' => 1);
-    // else
-    if (count($exp) >= 3)
-      $date_query['after'] = array('year' => $exp[0], 'month' => $exp[1], 'day' => $exp[2]);
-  }
-
-  $until = $req->get_param('until');
-  if (isset($until)) {
-    $exp = explode('-', $until);
-    // if (count($exp) == 1)
-    //   $date_query['before'] = array('year' => $exp[0], 'month' => 12, 'day' => 31);
-    // else if (count($exp) == 2)
-    //   $date_query['before'] = array('year' => $exp[0], 'month' => $exp[1]);
-    // else
-    if (count($exp) >= 3)
-      $date_query['before'] = array('year' => $exp[0], 'month' => $exp[1], 'day' => $exp[2]);
-  }
-
-  if (count($date_query) > 1) {
-    $args['date_query'] = array($date_query);
-  }
-
-
-  $query = new WP_Query($args);
-  $issues = array();
-
-  while ($query->have_posts()) {
-    $query->the_post();
-    $issues[] = archivescms_issue_response($query);
-  }
-  wp_reset_postdata();
-
-  return rest_ensure_response(array(
-    'page' => isset($page) ? intval($page) : 1,
-    'max_pages' => $query->max_num_pages,
-    'order' => isset($order) ? (($order == 'asc' || $order == 'desc') ? $order : 'desc') : 'desc',
-    'categ' => $isLegacy == 'true' ? 'legacy' : $categ,
-    'year' => isset($year) ? intval($year) : null,
-    'from' => $from,
-    'until' => $until,
-    'volume' => $volume,
-    'search' => $search,
-    'found' => $query->found_posts,
-    'issues' => $issues,
-  ));
-}
-
-
-function archivescms_get_issue($req) {
-  $issue = array();
-
-  $query = new WP_Query(array(
-    'meta_query' => array(
-      array('key' => 'fixed_slug', 'value' => $req['slug']),
-    ),
-  ));
-
-  if ($query->have_posts()) {
-    $query->the_post();
-    $issue = archivescms_issue_response($query);
-  }
-  wp_reset_postdata();
-
-  return rest_ensure_response($issue);
-}
-
-
-function archivescms_get_random() {
-  $rnd = array(
-    'titles' => array(),
-    'authors' => array(),
-    'volumes' => array(),
-    'covers' => array(),
-  );
-  
-  // get 10 titles
-  $query = new WP_Query(array(
-    'posts_per_page' => 10,
-    'orderby' => 'rand',
-  ));
-
-  while ($query->have_posts()) {
-    $query->the_post();
-    $rnd['titles'][] = get_the_title($query->post->ID);
-  }
-  wp_reset_postdata();
-
-
-  // get 5 issues with article_content
-  // for each issue, return 2 authors
-  $query = new WP_Query(array(
-    'posts_per_page' => 5,
-    'orderby' => 'rand',
-    'meta_query' => array(
-      array(
-        'key' => 'article_content',
-        'compare' => 'EXISTS',
-      ),
-    ),
-  ));
-
-  while ($query->have_posts()) {
-    $query->the_post();
-    $article_content = get_post_meta($query->post->ID, 'article_content', true);
-
-    $exp = explode("\"bylines\"", $article_content);
-    for ($i = 0; $i < 2; $i++) {
-      $idx = rand(1, count($exp) - 1);
-      $bylines = explode("]", explode("[", $exp[$idx])[1])[0];
-
-      $exp2 = explode(",", $bylines);
-      $idx2 = rand(0, count($exp2) - 1);
-      $rnd['authors'][] = explode("\"", $exp2[$idx2])[1];
-    }
-  }
-
-
-  // get 5 articles with volume_num
-  $query = new WP_Query(array(
-    'posts_per_page' => 5,
-    'orderby' => 'rand',
-    'meta_query' => array(
-      array(
-        'key' => 'volume_num',
-        'compare' => 'EXISTS',
-      ),
-    ),
-  ));
-
-  while ($query->have_posts()) {
-    $query->the_post();
-    $rnd['volumes'][] = get_post_meta($query->post->ID, 'volume_num', true);
-  }
-  wp_reset_postdata();
-
-
-  // get 2 covers per categ
-  $categs = array('press-issue', 'graduation-magazine', 'freshmanual', 'uaap-primer', 'other');
-  foreach ($categs as $categ) {
-    $q = new WP_Query(array(
-      'posts_per_page' => 2,
-      'orderby' => 'rand',
-      'category_name' => $categ,
-      'meta_query' => array(
-        'relation' => 'OR',
-        array(
-          'key' => 'is_legacy',
-          'value' => 'true',
-          'compare' => '!=',
-        ),
-        array(
-          'key' => 'is_legacy',
-          'compare' => 'NOT EXISTS',
-        ),
-      ),
-    ));
-
-    $rnd['covers'][$categ] = array();
-    while ($q->have_posts()) {
-      $q->the_post();
-      $rnd['covers'][$categ][] = wp_get_attachment_image_src(get_post_thumbnail_id($q->post->ID), 'large')[0];
-    }
-    wp_reset_postdata();
-  }
-
-  $legacy_query = new WP_Query(array(
-    'posts_per_page' => 2,
-    'orderby' => 'rand',
-    'meta_query' => array(
-      array(
-        'key' => 'is_legacy',
-        'value' => 'true',
-        'compare' => '=',
-      )
-    ),
-  ));
-
-  while ($legacy_query->have_posts()) {
-    $legacy_query->the_post();
-    $rnd['covers']['legacy'][] = wp_get_attachment_image_src(get_post_thumbnail_id($legacy_query->post->ID), 'large')[0];
-  }
-  wp_reset_postdata();
-
-  // TODO REMOVE BEFORE PRODUCTION
-  for ($i = 0; $i < 2; $i++) {
-    if (count($rnd['covers']['legacy']) <= $i) {
-      $rnd['covers']['legacy'][] = $rnd['covers']['legacy'][0];
-    }
-  }
-
-  return rest_ensure_response($rnd);
-}
-
-
-function archivescms_get_minmax() {
-  $earliest = get_posts(array(
-    'numberposts' => 1,
-    'order_by' => 'publish_date',
-    'order' => 'ASC',
-  ));
-
-  return rest_ensure_response(array(
-    'min' => get_the_date("c", $earliest[0]->ID),
-    'max' => date("c"),
-  ));
-}
-
-
 add_action('rest_api_init', function() {
   /**
    * GET /issues
+   * ?legacy
+   * ?categ
+   * ?page
+   * ?order
+   * ?volume
+   * ?search
+   * ?year
+   * ?from
+   * ?until
    */
   register_rest_route('api/v1', 'issues', array(
       'methods' => 'GET',
@@ -383,6 +117,30 @@ add_action('rest_api_init', function() {
   register_rest_route('api/v1', 'random', array(
     'methods' => 'GET',
     'callback' => 'archivescms_get_random',
+  ));
+
+  /**
+   * GET /table/issues
+   */
+  register_rest_route('api/v1', 'table/issues', array(
+    'methods' => 'GET',
+    'callback' => 'archivescms_get_table_issues',
+  ));
+
+  /**
+   * GET /table/content
+   */
+  register_rest_route('api/v1', 'table/content', array(
+    'methods' => 'GET',
+    'callback' => 'archivescms_get_table_content',
+  ));
+
+  /**
+   * GET /table/contributors
+   */
+  register_rest_route('api/v1', 'table/contributors', array(
+    'methods' => 'GET',
+    'callback' => 'archivescms_get_table_contributors',
   ));
 });
 
