@@ -43,6 +43,7 @@ function archivescms_issue_response($query) {
   $volume_num = get_post_meta($query->post->ID, 'volume_num', true);
   $issue_num = get_post_meta($query->post->ID, 'issue_num', true);
   $article_content = get_post_meta($query->post->ID, 'article_content', true);
+  $contributors = get_post_meta($query->post->ID, 'contribs', true);
 
   return array(
     'fixed_slug' => get_post_meta($query->post->ID, 'fixed_slug', true),
@@ -62,6 +63,7 @@ function archivescms_issue_response($query) {
     // 'full_issue' => get_post_meta($query->post->ID, 'full_issue', true),
     'full_issue' => '/issues/' . get_the_date('Y') . '/' . get_post_meta($query->post->ID, 'fixed_slug', true) . '.pdf',
     'article_content' => empty($article_content) ? '[]' : $article_content,
+    'contributors' => empty($contributors) ? '[]' : $contributors,
     'categories' => $categories,
   );
 }
@@ -106,8 +108,14 @@ function archivescms_get_issues($req) {
   } else if (isset($search)) {
     $args['search_query'] = $search;
     $args['meta_query'] = array(
+      'relation' => 'OR',
       array(
         'key' => 'article_content',
+        'value' => $search,
+        'compare' => 'LIKE',
+      ),
+      array(
+        'key' => 'contribs',
         'value' => $search,
         'compare' => 'LIKE',
       ),
@@ -200,70 +208,6 @@ function archivescms_get_issue($req) {
   wp_reset_postdata();
 
   return rest_ensure_response($issue);
-}
-
-
-function archivescms_get_random_covers() {
-  $covers = array(
-    'legacy' => array(),
-  );
-
-  $categs = array('press-issue', 'graduation-magazine', 'freshmanual', 'uaap-primer', 'other');
-  
-  foreach ($categs as $categ) {
-    $q = new WP_Query(array(
-      'posts_per_page' => 2,
-      'orderby' => 'rand',
-      'category_name' => $categ,
-      'meta_query' => array(
-        'relation' => 'OR',
-        array(
-          'key' => 'is_legacy',
-          'value' => 'true',
-          'compare' => '!=',
-        ),
-        array(
-          'key' => 'is_legacy',
-          'compare' => 'NOT EXISTS',
-        ),
-      ),
-    ));
-
-    $covers[$categ] = array();
-
-    while ($q->have_posts()) {
-      $q->the_post();
-      $covers[$categ][] = wp_get_attachment_image_src(get_post_thumbnail_id($standard_query->post->ID), 'large')[0];
-    }
-    wp_reset_postdata();
-  }
-
-  $legacy_query = new WP_Query(array(
-    'posts_per_page' => 2,
-    'orderby' => 'rand',
-    'meta_query' => array(
-      array(
-        'key' => 'is_legacy',
-        'value' => 'true',
-        'compare' => '=',
-      )
-    ),
-  ));
-
-  while ($legacy_query->have_posts()) {
-    $legacy_query->the_post();
-    $covers['legacy'][] = wp_get_attachment_image_src(get_post_thumbnail_id($legacy_query->post->ID), 'large')[0];
-  }
-  wp_reset_postdata();
-
-  // TODO REMOVE BEFORE PRODUCTION
-  for ($i = 0; $i < 2; $i++) {
-    if (count($covers['legacy']) <= $i) {
-      $covers['legacy'][] = $covers['legacy'][0];
-    }
-  }
-
-  return rest_ensure_response($covers);
 }
 
 
@@ -411,13 +355,6 @@ function archivescms_get_minmax() {
 add_action('rest_api_init', function() {
   /**
    * GET /issues
-   * Get latest issues
-   * ?search
-   * ?categ
-   * ?page
-   * ?from
-   * ?to
-   * ?sort
    */
   register_rest_route('api/v1', 'issues', array(
       'methods' => 'GET',
@@ -430,14 +367,6 @@ add_action('rest_api_init', function() {
   register_rest_route('api/v1', 'issue/(?P<slug>[a-zA-Z0-9-_]+)', array(
     'methods' => 'GET',
     'callback' => 'archivescms_get_issue',
-  ));
-
-  /**
-   * GET /random-covers
-   */
-  register_rest_route('api/v1', 'random-covers', array(
-    'methods' => 'GET',
-    'callback' => 'archivescms_get_random_covers',
   ));
 
   /**
