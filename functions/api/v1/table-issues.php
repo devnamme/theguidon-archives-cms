@@ -2,8 +2,8 @@
 
 function archivescms_get_table_issues() {
   $order = array(
-    'fixed_slug',
     'title',
+    'fixed_slug',
     'date_published',
     'description',
     'is_legacy',
