@@ -81,15 +81,16 @@ function archivescms_issue_response($query) {
 add_action('rest_api_init', function() {
   /**
    * GET /issues
-   * ?legacy
-   * ?categ
-   * ?page
-   * ?order
-   * ?volume
-   * ?search
-   * ?year
-   * ?from
-   * ?until
+   * ?legacy    boolean   true, false
+   * ?categ     string    press-issue, graduation-magazine, freshmanual, uaap-primer, other
+   * ?page      integer
+   * ?order     string    asc, desc
+   * ?volume    integer
+   * ?search    string
+   * ?year      integer
+   * ?from      string    YYYY-MM-DD
+   * ?until     string    YYYY-MM-DD
+   * 
    */
   register_rest_route('api/v1', 'issues', array(
       'methods' => 'GET',
@@ -98,6 +99,8 @@ add_action('rest_api_init', function() {
 
   /**
    * GET /issue/:slug
+   * :slug      string
+   * 
    */
   register_rest_route('api/v1', 'issue/(?P<slug>[a-zA-Z0-9-_]+)', array(
     'methods' => 'GET',
